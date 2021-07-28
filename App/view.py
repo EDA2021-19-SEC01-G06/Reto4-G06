@@ -34,25 +34,52 @@ se hace la solicitud al controlador para ejecutar la
 operación solicitada
 """
 
+
+def eoc() -> None:
+    """
+    Le permite al usuario salir o continuar.
+    """
+    if input("ENTER para continuar o 0 para salir: ") == "0":
+        sys.exit(0)
+
+
 def printMenu():
     print("Bienvenido")
-    print("1- Cargar información en el catálogo")
-    print("2- ")
 
-catalog = None
+
+def mainMenu(analyzer):
+    """
+    Ciclo. Menú principal.
+    """
+    while True:
+        printMenu()
+        inputs = input('Seleccione una opción para continuar\n')
+        if int(inputs[0]) == 1:
+            pass
+        elif int(inputs[0]) == 2:
+            pass
+        else:
+            sys.exit(0)
+
+
+def init():
+    print("A continuación se cargará la información de los archivos")
+    eoc()
+    print("Cargando...")
+    #TODO
+
 
 """
-Menu principal
+MAIN PROGRAM
 """
-while True:
-    printMenu()
-    inputs = input('Seleccione una opción para continuar\n')
-    if int(inputs[0]) == 1:
-        print("Cargando información de los archivos ....")
-
-    elif int(inputs[0]) == 2:
-        pass
-
-    else:
-        sys.exit(0)
-sys.exit(0)
+try:
+    init()
+    sys.exit(0)
+except RecursionError:
+    print("***MÁXIMA RECURCIÓN ALCANZADA***")
+    crnt_rec_limit = sys.getrecursionlimit()
+    new_rec_limit = crnt_rec_limit * 10
+    print("El límite actual es de", crnt_rec_limit)
+    print("Ahora el programa se ejecutará con un límite de", new_rec_limit)
+    eoc()
+    init()
