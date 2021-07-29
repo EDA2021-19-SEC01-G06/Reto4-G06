@@ -37,14 +37,21 @@ operación solicitada
 
 def eoc() -> None:
     """
-    Le permite al usuario salir o continuar.
+    Le permite al usuario salir o continuar con la ejecución del programa.
     """
     if input("ENTER para continuar o 0 para salir: ") == "0":
         sys.exit(0)
 
 
 def printMenu():
+    """
+    Imprime las opciones del menú
+    """
     print("Bienvenido")
+    print("1- Cantidad de Clusters")
+    print("2- Encontrar ruta mínima")
+    print("3- Encontrar red de expanción mínima")
+    #TODO Bono
 
 
 def mainMenu(analyzer):
