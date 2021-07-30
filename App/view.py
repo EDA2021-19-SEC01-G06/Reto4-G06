@@ -37,6 +37,10 @@ se hace la solicitud al controlador para ejecutar la
 operación solicitada
 """
 
+# ==============================
+#       Output funciont
+# ==============================
+
 def printRow(row: list) -> None:
     """
     Imprime la fila de una tabla. Si el largo de los datos supera el ancho de la columna,
@@ -81,20 +85,9 @@ def printMenu():
     #TODO Bono
 
 
-def mainMenu(analyzer):
-    """
-    Ciclo. Menú principal.
-    """
-    while True:
-        printMenu()
-        inputs = input('Seleccione una opción para continuar\n')
-        if int(inputs[0]) == 1:
-            pass
-        elif int(inputs[0]) == 2:
-            pass
-        else:
-            sys.exit(0)
-
+# =======================
+#   Program functions
+# =======================
 
 def init():
     print("A continuación se cargará la información de los archivos")
@@ -140,6 +133,55 @@ def init():
     mainMenu(analyzer)
 
 
+def mainMenu(analyzer):
+    """
+    Ciclo. Menú principal.
+    """
+    while True:
+        printMenu()
+        inputs = input('Seleccione una opción para continuar\n')
+        if int(inputs[0]) == 1:
+            #REQ 1
+            findClusters(analyzer)
+        elif int(inputs[0]) == 2:
+            #REQ 2
+            minimunRoute()
+        elif int(inputs[0]) == 3:
+            #REQ3
+            minimumSpanNet()
+        else:
+            print("Fin de la ejecución")
+            sys.exit(0)
+
+# ===============================
+#       Option functions
+# ===============================
+
+def findClusters(analyzer: dict):
+    """
+    REQ 1
+    User input, process ans output to find clusters in connections
+    graph
+
+    Args
+    -----
+    analyzer: dict -- analizador
+    """
+    # User input
+    landing1Name = input("Nombre del landing point 1: ")
+    landing2Name = input("Nombre del landing point 2: ")
+    # Process
+    ans = controller.findClusters(analyzer, landing1Name, landing2Name)
+    # Output
+
+
+def minimunRoute():
+    pass
+
+
+def minimumSpanNet():
+    pass
+    
 
 """
 MAIN PROGRAM
