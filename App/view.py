@@ -77,6 +77,7 @@ def printMenu():
     print("1- Cantidad de Clusters")
     print("2- Encontrar ruta mínima")
     print("3- Encontrar red de expanción mínima")
+    print("0- Salir")
     #TODO Bono
 
 
@@ -108,6 +109,8 @@ def init():
     print("\nLanding points cargados:", mp.size(analyzer["landings"]))
     print("Conecciones cargadas:", gr.numEdges(analyzer["connectionsGr"]))
     print("Paises cargados:", mp.size(analyzer["countries"]))
+    print()
+    controller.mtt.printTrace()
     print()
     eoc()
     #Info del primer landing cargado

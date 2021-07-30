@@ -23,7 +23,8 @@
 import config as cf
 import model
 import csv
-
+from mtTraceLib.mtTrace import mtTrace
+mtt = mtTrace()
 
 """
 El controlador se encarga de mediar entre la vista y el modelo.
@@ -49,17 +50,24 @@ def loadData(analyzer: dict):
     ----
     analyzer: dict [str, Any] -- Analizador
     """
+    #Start memory and time trace
+    mtt.start()
+    
     firstLanding    =   loadLandings(analyzer)
     loadConnections(analyzer)
     lastCountry     =   loadCountries(analyzer)
     # Conecta los vertices que tienen un landing común
     model.groupLandings(analyzer)
 
+    
     returnDict = {
         "firstLanding": firstLanding,
         "lastCountry": lastCountry
     }
 
+    #Stop memory and time trace
+    mtt.stop()
+    
     return returnDict
 
 def loadCountries(analyzer: dict) -> dict:
