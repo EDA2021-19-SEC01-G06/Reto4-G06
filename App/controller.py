@@ -35,15 +35,89 @@ def initAnalyzer():
     """
     Inicializa el analizador
     """
-    model.initAnalyzer()
+    analyzer = model.initAnalyzer()
+    
+    return analyzer
 
 # Funciones para la carga de datos
 
-def loadData():
+def loadData(analyzer: dict):
     """
     Carga la información de los archivos
+
+    Args
+    ----
+    analyzer: dict [str, Any] -- Analizador
     """
-    
+    firstLanding    =   loadLandings(analyzer)
+    loadConnections(analyzer)
+    lastCountry     =   loadCountries(analyzer)
+    # Conecta los vertices que tienen un landing común
+    model.groupLandings(analyzer)
+
+    returnDict = {
+        "firstLanding": firstLanding,
+        "lastCountry": lastCountry
+    }
+
+    return returnDict
+
+def loadCountries(analyzer: dict) -> dict:
+    """
+    Carga la información de los paises desde los archivos.
+
+    Args
+    ----
+    analyzer: dict[str, Any] -- Analizador
+    """
+    file_path = cf.data_dir + "countries.csv"
+    input_file = csv.DictReader(open(file_path, encoding="utf-8"),
+                                delimiter=",")
+    for country in input_file:
+        model.addCountry(analyzer, country)
+        lastCountry = country
+
+    return country
+
+
+def loadLandings(analyzer: dict) -> dict:
+    """
+    Carga la información de los landing points desde los archivos.
+
+    Args
+    ----
+    analyzer: dict[str, Any] -- Analizador
+
+    Returns: dict[str, Any]
+    -------
+    El diccionario con la información del primer landing cargado
+    """
+    file_path = cf.data_dir + "landing_points.csv"
+    input_file = csv.DictReader(open(file_path, encoding="utf-8"),
+                                delimiter=",")
+    #First landing element
+    firstLanding = next(input_file)
+    model.addLanding(analyzer, firstLanding)
+    #Rest of the landing elements
+    for landing in input_file:
+        model.addLanding(analyzer, landing)
+
+    return firstLanding
+
+def loadConnections(analyzer: dict):
+    """
+    Carga la información de las conecciones desde los archivos.
+
+    Args
+    ----
+    analyzer: dict[str, Any] -- Analizador
+    """
+    file_path = cf.data_dir + "connections.csv"
+    input_file = csv.DictReader(open(file_path, encoding="utf-8-sig"),
+                                delimiter=",")
+    for connection in input_file:
+        model.addConnection(analyzer, connection)
+
 
 # Funciones de ordenamiento
 

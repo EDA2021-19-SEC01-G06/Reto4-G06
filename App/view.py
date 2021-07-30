@@ -24,6 +24,9 @@ import config as cf
 import sys
 import controller
 from DISClib.ADT import list as lt
+from DISClib.ADT import map as mp
+from DISClib.DataStructures import mapentry as me
+from DISClib.ADT.graph import gr
 assert cf
 
 
@@ -33,6 +36,29 @@ Presenta el menu de opciones y por cada seleccion
 se hace la solicitud al controlador para ejecutar la
 operación solicitada
 """
+
+def printRow(row: list) -> None:
+    """
+    Imprime la fila de una tabla. Si el largo de los datos supera el ancho de la columna,
+    imprime el dato incompleto con ...
+    Args:
+        row: Lista de listas. Row debe ser de la forma [<lens>, <data>]
+            <lens>: (list) Lista con ancho de las columnas
+            <data>: (list) Lista con datos de las columnas
+    TODO Manejo de ancho y caracteres asiaticos
+    """
+    rowFormat = ""
+    for i in range(0, len(row[0])):
+        colWidth = row[0][i]
+        cell = str(row[1][i])
+        #Añade la columna al formato
+        rowFormat += "{:<" + str(colWidth) + "}"
+        #Revisa y corrige si el tamaño de los datos es más grande que la columna
+        if len(cell) > colWidth:
+            row[1][i] = cell[0:colWidth - 3] + "..."
+    
+    #Imrpime la fila
+    print(rowFormat.format(*row[1]))
 
 
 def eoc() -> None:
@@ -73,7 +99,43 @@ def init():
     print("A continuación se cargará la información de los archivos")
     eoc()
     print("Cargando...")
-    #TODO
+    #Load data
+    analyzer = controller.initAnalyzer()
+    loadInfo = controller.loadData(analyzer)
+    firstLanding = loadInfo["firstLanding"]
+    lastCountry = loadInfo["lastCountry"]
+    #Print loading result
+    print("\nLanding points cargados:", mp.size(analyzer["landings"]))
+    print("Conecciones cargadas:", gr.numEdges(analyzer["connectionsGr"]))
+    print("Paises cargados:", mp.size(analyzer["countries"]))
+    print()
+    eoc()
+    #Info del primer landing cargado
+    print("\n**Primer landing point cargado**")
+    printRow([
+        [10, 30, 10, 10],
+        ["id", "name", "lat", "long"]
+    ])
+    printRow([
+        [10, 30, 10, 10],
+        [firstLanding["landing_point_id"], firstLanding["name"], firstLanding["latitude"],
+        firstLanding["longitude"]]
+    ])
+    #Info del último país cargado
+    print("\n**Último país cargado**")
+    printRow([
+        [20, 20, 20],
+        ["Name", "Population", "Internet users"]
+    ])
+    printRow([
+        [20, 20, 20],
+        [lastCountry["CountryName"], lastCountry["Population"], lastCountry["Internet users"]]
+    ])
+    print()
+    eoc()
+    #Ejecuta el menú principal
+    mainMenu(analyzer)
+
 
 
 """
