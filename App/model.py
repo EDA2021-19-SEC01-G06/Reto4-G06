@@ -51,9 +51,10 @@ def initAnalyzer() -> dict:
     El analizador inicializado
     """
     analyzer = {
-        "connectionsGr" :   gr.newGraph("ADJ_LIST", True, 3700, compareLandingsId),
-        "landings"      :   mp.newMap(loadfactor=2),
-        "countries"     :   mp.newMap(loadfactor=2)
+        "connectionsGr"     :   gr.newGraph("ADJ_LIST", True, 3700, compareLandingsId),
+        "landingsById"      :   mp.newMap(loadfactor=2),
+        "landingsByName"    :   mp.newMap(loadfactor=2),
+        "countries"         :   mp.newMap(loadfactor=2),
     }
 
     return analyzer
@@ -63,11 +64,14 @@ def initAnalyzer() -> dict:
 
 def addLanding(analyzer: dict, landing: dict):
     """
-    Agrega un landing point y su información al mapa de landing points
-    del analizador. Se agrega como llave el landing_point_id y como valor
+    Agrega un landing point y su información al mapa de landing points por id y
+    por nombre del analizador. Se agrega como llave el landing_point_id y como valor
     el diccionario con toda la información del landing point. Crea la estructura
     para almacenar la lista de vertices que corresponden al landing point.
     Adicionalmente crea el país y la estructura de datos vacía.
+
+    Nota: la información completa del landing solo queda almacenada en el mapa de
+    landings por Id. En las otras estructuras se almacena solo el id como str.
 
     Args
     ----
@@ -76,8 +80,10 @@ def addLanding(analyzer: dict, landing: dict):
     """
     # Crea la lista para almacenar los vertices correspondientes al landing
     landing["vertices"] = lt.newList("ARRAY_LIST")
-    # Añade el landing al mapa de landings 
-    mp.put(analyzer["landings"], landing["landing_point_id"], landing)
+    # Añade el landing al mapa de landings por Id
+    mp.put(analyzer["landingsById"], landing["landing_point_id"], landing)
+    # Añade el landing al mapa de landings por nombre
+    mp.put(analyzer["landingsByName"], landing["name"], landing["landing_point_id"])
     # Obtiene el nombre del país
     countryName = landing["name"].split(", ")[-1]
     # Crea el país del Landing si no existe
@@ -100,7 +106,7 @@ def createCountry(analyzer: dict, countryName: str):
     countryName = countryName.strip().lower()
     country = getMapValue(analyzer["countries"], countryName)
     if country is None:
-        countryNode = {"landings": lt.newList("ARRAY_LIST")}
+        countryNode = {"landingsById": lt.newList("ARRAY_LIST")}
         mp.put(analyzer["countries"], countryName, countryNode)
 
 
@@ -115,7 +121,7 @@ def addLandToCountry(analyzer: dict, landingId: str, countryName: str):
     countryName: str -- nombre del país
     """
     countryName = countryName.strip().lower()
-    countryLanList = getMapValue(analyzer["countries"], countryName)["landings"]
+    countryLanList = getMapValue(analyzer["countries"], countryName)["landingsById"]
     lt.addLast(countryLanList, landingId)
 
 
@@ -138,7 +144,7 @@ def addCountry(analyzer: dict, country: dict):
         countryNode.update(country)
     else:
         # Crea la lista para los landings del país
-        country["landings"] = lt.newList("ARRAY_LIST")
+        country["landingsById"] = lt.newList("ARRAY_LIST")
         # Añade el país al mapa de paises
         countryNode = country
         mp.put(analyzer["countries"], countryName, countryNode)
@@ -187,7 +193,7 @@ def connectCapital(analyzer: dict, country: dict):
 
     # Crea la conección a todas los landings del país
     #Si no hay landings en el país
-    if lt.isEmpty(country["landings"]):
+    if lt.isEmpty(country["landingsById"]):
         #Busca el landing mas cercano
         nearestId, cableLength = fNearestLand(landingNode)[0]
         # Crea el vertice del landing mas cercano
@@ -195,9 +201,9 @@ def connectCapital(analyzer: dict, country: dict):
     #Si sí hay landings
     else:
         #Ciclo por los landings del país
-        for orgDest in lt.iterator(country["landings"]):
+        for orgDest in lt.iterator(country["landingsById"]):
             # Calcula la distance
-            orgDestNode = getMapValue(analyzer["landings"], orgDest)
+            orgDestNode = getMapValue(analyzer["landingsById"], orgDest)
             cableLength = calcLanDistance(orgDestNode, landingNode)
             # Crea el vertice de orgDest
             vertexB = addConVertex(analyzer, orgDest, cableName)
@@ -223,8 +229,8 @@ def addConnection(analyzer: dict, connection: dict):
         cableLength = float(connection["cable_length"].strip(" km").replace(",", ""))
     except ValueError:
         # Si no se logra obtener la distancia entre 2 landing points, se calcula
-        landing1 = getMapValue(analyzer["landings"], connection["origin"])
-        landing2 = getMapValue(analyzer["landings"], connection["destination"])
+        landing1 = getMapValue(analyzer["landingsById"], connection["origin"])
+        landing2 = getMapValue(analyzer["landingsById"], connection["destination"])
         cableLength = calcLanDistance(landing1, landing2)
     # Añade el vertice de origen
     vertexA = addConVertex(analyzer, connection["origin"], connection["cable_id"])
@@ -247,7 +253,7 @@ def addConVertex(analyzer: dict, landing: str, cable: str):
     """
     vertexName = landing + "-" + cable
     gr.insertVertex(analyzer["connectionsGr"], vertexName)
-    landingVerLst = getMapValue(analyzer["landings"], landing)["vertices"]
+    landingVerLst = getMapValue(analyzer["landingsById"], landing)["vertices"]
     lt.addLast(landingVerLst, vertexName)
 
     return vertexName
@@ -261,7 +267,7 @@ def groupLandings(analyzer: dict):
     ----
     analyzer: dict -- analizador
     """
-    landingsLst = mp.valueSet(analyzer["landings"])
+    landingsLst = mp.valueSet(analyzer["landingsById"])
 
     for landing in lt.iterator(landingsLst):
         verticesLst = landing["vertices"]
@@ -294,7 +300,7 @@ def fNearestLand(analyzer: dict, landing1: dict) -> str:
     -------
     str -- identificador del landing más cercano
     """
-    landingsLst = mp.valueSet(analyzer["landings"])
+    landingsLst = mp.valueSet(analyzer["landingsById"])
     crrntMinDistance = math.inf
     # Ciclo por todos los landings
     for landing2 in lt.iterator(landingsLst):
