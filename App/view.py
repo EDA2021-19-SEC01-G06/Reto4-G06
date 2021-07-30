@@ -99,7 +99,7 @@ def init():
     firstLanding = loadInfo["firstLanding"]
     lastCountry = loadInfo["lastCountry"]
     #Print loading result
-    print("\nLanding points cargados:", mp.size(analyzer["landings"]))
+    print("\nLanding points cargados:", mp.size(analyzer["landingsById"]))
     print("Conecciones cargadas:", gr.numEdges(analyzer["connectionsGr"]))
     print("Paises cargados:", mp.size(analyzer["countries"]))
     print()
