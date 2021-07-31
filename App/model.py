@@ -55,6 +55,7 @@ def initAnalyzer() -> dict:
         "landingsById"      :   mp.newMap(loadfactor=2),
         "landingsByName"    :   mp.newMap(loadfactor=2),
         "countries"         :   mp.newMap(loadfactor=2),
+        "highestLandingId"  :   -1
     }
 
     return analyzer
@@ -80,10 +81,15 @@ def addLanding(analyzer: dict, landing: dict):
     """
     # Crea la lista para almacenar los vertices correspondientes al landing
     landing["vertices"] = lt.newList("ARRAY_LIST")
+    # Le da formato al nombre del Landing
+    landing["name"] = formatLanName(landing["name"])
     # Añade el landing al mapa de landings por Id
     mp.put(analyzer["landingsById"], landing["landing_point_id"], landing)
     # Añade el landing al mapa de landings por nombre
     mp.put(analyzer["landingsByName"], landing["name"].strip().lower(), landing["landing_point_id"])
+    # Actualiza el valor de highestLandingId
+    if int(landing["landing_point_id"]) > analyzer["highestLandingId"]:
+        analyzer["highestLandingId"] = int(landing["landing_point_id"])
     # Obtiene el nombre del país
     countryName = landing["name"].split(", ")[-1]
     # Crea el país del Landing si no existe
@@ -173,44 +179,80 @@ def connectCapital(analyzer: dict, country: dict):
     # Si el país no tiene capital, no hace nada
     if country["CapitalName"] == "":
         return False
-    
-    # Crea la información del landing point
-    capitalNameId = country["CapitalName"].strip().lower().replace(" ", "")
-    landingNode = {
-        "landing_point_id"  : capitalNameId,
-        "name"              : country["CapitalName"] + ", " + country["CountryName"],
-        "latitude"          : country["CapitalLatitude"],
-        "longitude"         : country["CapitalLongitude"],
-        "vertices"          : lt.newList("ARRAY_LIST")
-    }
 
-    # Añade el landing al mapa de landings
-    addLanding(analyzer, landingNode)
+    # Obtiene el landing en la capital
+    landingNode = createCapitalLan(analyzer, country)
 
-    # Crea el vertice en el grafo de conecciones
-    cableName = country["CountryName"] + "_terrestre"
-    vertexA = addConVertex(analyzer, capitalNameId, cableName)
 
     # Crea la conección a todas los landings del país
-    #Si no hay landings en el país
+    # Si no hay landings en el país
     if lt.isEmpty(country["landingsById"]):
+        # Crea el vertice A en el grafo de conecciones
+        cableName = country["CountryName"] + "_ter1"
+        vertexA = addConVertex(analyzer, landingNode["landing_point_id"], cableName)
         #Busca el landing mas cercano
-        nearestId, cableLength = fNearestLand(landingNode)[0]
-        # Crea el vertice del landing mas cercano
+        nearestId, cableLength = fNearestLand(analyzer, landingNode)
+        # Crea el vertice B del landing mas cercano
         vertexB = addConVertex(analyzer, nearestId, cableName)
+        # Crea las conecciones
+        gr.addEdge(analyzer["connectionsGr"], vertexA, vertexB, cableLength)
+        gr.addEdge(analyzer["connectionsGr"], vertexB, vertexA, cableLength)
     #Si sí hay landings
     else:
         #Ciclo por los landings del país
+        i = 1
         for orgDest in lt.iterator(country["landingsById"]):
+            # Crea el vertice A en el grafo de conecciones
+            cableName = country["CountryName"] + "_ter" + str(i)
+            i += 1
+            vertexA = addConVertex(analyzer, landingNode["landing_point_id"], cableName)
             # Calcula la distance
             orgDestNode = getMapValue(analyzer["landingsById"], orgDest)
             cableLength = calcLanDistance(orgDestNode, landingNode)
-            # Crea el vertice de orgDest
+            # Crea el vertice B de orgDest
             vertexB = addConVertex(analyzer, orgDest, cableName)
+            # Crea las conecciones
+            gr.addEdge(analyzer["connectionsGr"], vertexA, vertexB, cableLength)
+            gr.addEdge(analyzer["connectionsGr"], vertexB, vertexA, cableLength)
 
-    # Crea las conecciones
-    gr.addEdge(analyzer["connectionsGr"], vertexA, vertexB, cableLength)
-    gr.addEdge(analyzer["connectionsGr"], vertexB, vertexA, cableLength)
+    return True
+
+def createCapitalLan(analyzer: dict, country: dict):
+    """
+    Crea añade y retorna un landingNode con la información de la capital de un país.
+    Si la capital ya existe, retorna la información de la capital ya existente.
+
+    Args
+    ----
+    analyzer: dict -- analizador
+    country: dict -- diccionario con la información del país.
+
+    Returns
+    --------
+    dict -- diccionario con la información del landing en la capital
+    """
+    # Crea el nombre del landing point
+    lanName = (country["CapitalName"] + ", " + country["CountryName"]).strip().lower()
+    # Revisa si ya existe un landing en la capital
+    existingCapLanId = getMapValue(analyzer["landingsByName"], lanName)
+    if existingCapLanId is not None:
+        # Obtiene el nodo de landing existente
+        landingNode = getMapValue(analyzer["landingsById"], existingCapLanId)
+
+        return landingNode
+    else:
+        # Si no existe un landing en la capital
+        # Crea la información del landing point
+        landingNode = newLandingNode(
+            analyzer,
+            country["CapitalName"] + country["CountryName"],
+            country["CapitalLatitude"],
+            country["CapitalLongitude"]
+        )
+        # Añade el landing al mapa de landings
+        addLanding(analyzer, landingNode)
+
+        return landingNode
 
 
 def addConnection(analyzer: dict, connection: dict):
@@ -283,6 +325,44 @@ def groupLandings(analyzer: dict):
 
 
 # Funciones para creacion de datos
+
+def newLandingNode(analyzer: dict, name: str, lat: str, lon: str, lanPId: str = None, vertices = None):
+    """
+    Crea el diccionario que contiene la información necesaria para un Landing.
+    El diccionario contiene llaves landing_point_id, name, latitude, longitude,
+    vertices.
+
+    Args
+    ----
+    analyzer: dict -- analizador
+    name: str -- Nombre del landing point de la forma "<city>, <country>"
+    lat: str -- Latitud del landing point
+    lon: str -- Longitud del landing point
+    lanPId: str, optional -- id (numerico) del landing point. Si no se pasa
+    se asigna automáticamente un id.
+    vertices: optional -- TAD lista con vertices que corresponden a ese landing point.
+    Si no se pasa por parámetro, se inicializa una lista vacia.
+
+    Returns
+    -------
+    dict -- Diccionario con la información del landing
+    """
+    if lanPId is None:
+        lanPId = str(analyzer["highestLandingId"] + 1)
+
+    if vertices is None:
+        vertices = lt.newList("ARRAY_LIST")
+    
+    landingNode = {
+        "landing_point_id"  : lanPId,
+        "name"              : name,
+        "latitude"          : lat,
+        "longitude"         : lon,
+        "vertices"          : vertices
+    }
+
+    return landingNode
+
 
 # Funciones de consulta
 
@@ -368,3 +448,24 @@ def calcLanDistance(landingA: dict, landingB: dict) -> float:
     distaceKm = haversine(latLon1, latLon2)
 
     return distaceKm
+
+
+def formatLanName(lanName: str) -> str:
+    """
+    Da formato al nombre del landing de la forma "<city>, <country>"
+    para estandarizar el nombre de los landings.
+    *Note que algunos landings tienen un nombre de la forma "<city>, <state>,
+    <country>" originalmente. En esos caso se elimina <state>
+
+    Args
+    ----
+    lanName: str -- nombre original del landing
+
+    Returns
+    -------
+    str -- nombre del landing formateado
+    """
+    lanNDict = lanName.split(",")
+    lanName = lanNDict[0].strip() + ", " + lanNDict[-1].strip()
+
+    return lanName

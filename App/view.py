@@ -23,6 +23,7 @@
 import config as cf
 import sys
 import controller
+from mapLib import map as geoMap
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
@@ -215,7 +216,7 @@ def mainMenu(analyzer):
 def findClusters(analyzer: dict):
     """
     REQ 1
-    User input, process ans output to find clusters in connections
+    User input, process and output to find clusters in connections
     graph
 
     Args
@@ -258,6 +259,7 @@ def getMapValue(map, key):
         return None
     value = me.getValue(entry)
     return value   
+
 
 """
 MAIN PROGRAM
