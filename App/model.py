@@ -83,7 +83,7 @@ def addLanding(analyzer: dict, landing: dict):
     # Añade el landing al mapa de landings por Id
     mp.put(analyzer["landingsById"], landing["landing_point_id"], landing)
     # Añade el landing al mapa de landings por nombre
-    mp.put(analyzer["landingsByName"], landing["name"], landing["landing_point_id"])
+    mp.put(analyzer["landingsByName"], landing["name"].strip().lower(), landing["landing_point_id"])
     # Obtiene el nombre del país
     countryName = landing["name"].split(", ")[-1]
     # Crea el país del Landing si no existe

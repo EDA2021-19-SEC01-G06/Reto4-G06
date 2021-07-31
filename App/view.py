@@ -38,7 +38,7 @@ operación solicitada
 """
 
 # ==============================
-#       Output funciont
+#    Input / Output funciont
 # ==============================
 
 def printRow(row: list) -> None:
@@ -83,6 +83,61 @@ def printMenu():
     print("3- Encontrar red de expanción mínima")
     print("0- Salir")
     #TODO Bono
+
+
+def userInput(prompt: str, Intype = str, validateFunc = None, validateMap = None,
+    notFPromt: str = "Entrada invalida, intente nuevamente"):
+    """
+    Valida si el input que dio el usuario es valido. Utiliza validateFunc
+    o validateMap para lo anterior. Si el input no es valido, itera hasta
+    que el usuario ingrese un input valido.
+
+    Args
+    ----
+    promt: str -- Mensaje para el input
+    Intype: type -- tipo al que se debe convertir el input para validarlo, por ejemplo int.
+        El tipo debe ser una clase cuya función de inicialización reciba un str y lo convierta
+        al tipo deseado.
+    validateFunc: function -- función que recibe un solo argumento (el input del usuario, convertido al tipo
+        pasado por parámetro). La función retorna True si la entrada es valida o False si no lo es.
+        Si no se espcifica, se utiliza validateMap para validar la entrada-
+    validateMap -- mapa en el que se revisa si existe una entrada cuya llave corresponda a el input
+        del usuario convertido al tipo especificado por parámetro. Si existe la entrada, se considera
+        que el input del usuario es valido, de lo contrario, se considera que el input del usuario
+        es invalido.
+    notFPromt: str -- Texto a imprimir si la entrada es inválida
+    
+    Returns
+    -------
+    El input del usuario convertido al tipo especificado por parámetro
+    """
+    # Si no hay manera de validar
+    if validateFunc is None and validateMap is None:
+        raise Exception("No se especificó validateMap ni validateFunc.")
+    # Si se especifico validar con función
+    elif validateFunc is not None:
+        first = True
+        inputs = None
+        while first or (validateFunc(inputs) == False):
+            if not first:
+                print(notFPromt)
+            first = False
+            inputs = Intype(input(prompt).strip().lower())
+        
+        return inputs
+    # Si se especificó validar con map
+    elif validateMap is not None:
+        first = True
+        inputs = None
+        while first or (getMapValue(validateMap, inputs) is None):
+            if not first:
+                print(notFPromt)
+            first = False
+            inputs = Intype(input(prompt).strip().lower())
+            mapValue = getMapValue(validateMap, inputs)
+        
+        return inputs
+    
 
 
 # =======================
@@ -168,8 +223,14 @@ def findClusters(analyzer: dict):
     analyzer: dict -- analizador
     """
     # User input
-    landing1Name = input("Nombre del landing point 1: ")
-    landing2Name = input("Nombre del landing point 2: ")
+    landing1Name = userInput(
+        "Nombre del landing point 1 (Ej: Jakarta, Indonecia): ",
+        validateMap=analyzer["landingsByName"],
+        notFPromt="Nombre no encontrado, intente nuevamente")
+    landing2Name = userInput(
+        "Nombre del landing point 2 (Ej: Singapore, Singapore): ",
+        validateMap=analyzer["landingsByName"],
+        notFPromt="Nombre no encontrado, intente nuevamente")
     # Process
     ans = controller.findClusters(analyzer, landing1Name, landing2Name)
     # Output
@@ -181,7 +242,22 @@ def minimunRoute():
 
 def minimumSpanNet():
     pass
-    
+
+
+# ============================
+#       Otras funciones
+# ============================
+
+def getMapValue(map, key):
+    """
+    Devuelve el valor correspondiente a la llave pasada por parámetro
+    o None si no encuentra la llave en el mapa
+    """
+    entry = mp.get(map, key)
+    if entry == None:
+        return None
+    value = me.getValue(entry)
+    return value   
 
 """
 MAIN PROGRAM
