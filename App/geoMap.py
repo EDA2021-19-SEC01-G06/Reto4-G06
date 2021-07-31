@@ -1,6 +1,16 @@
 import os
-import sys
-import folium
+try:
+    import folium
+except ModuleNotFoundError:
+    msg = "\n************************************************************************\n" + \
+        "No se encontró la librería Folium\n" + \
+        "Esta librería es requerida para crear los mapas de los requerimientos\n" + \
+        "Ejecute el siguiente comando en la consola para instalar la librería\n" + \
+        "'python -m pip install folium'\n" + \
+        "***************************************************************************"
+    raise ModuleNotFoundError(msg)
+
+
 import subprocess
 import platform
 from DISClib.ADT import list as lt
