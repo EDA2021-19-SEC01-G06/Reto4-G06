@@ -1,7 +1,5 @@
 import os
 import folium
-
-
 import subprocess
 import platform
 from DISClib.ADT import list as lt
