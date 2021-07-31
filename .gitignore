@@ -143,3 +143,6 @@ dmypy.json
 !Data/videos-small.csv
 
 .vim
+
+# Saved maps
+map.html
