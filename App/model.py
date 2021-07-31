@@ -245,7 +245,7 @@ def createCapitalLan(analyzer: dict, country: dict):
         # Crea la información del landing point
         landingNode = newLandingNode(
             analyzer,
-            country["CapitalName"] + country["CountryName"],
+            country["CapitalName"] + ", " + country["CountryName"],
             country["CapitalLatitude"],
             country["CapitalLongitude"]
         )
@@ -267,13 +267,9 @@ def addConnection(analyzer: dict, connection: dict):
     analyzer: dict[str, Any] -- Analizador
     connection: dict[str, Any] -- Diccionario con toda la información de la conección a agregar
     """
-    try:
-        cableLength = float(connection["cable_length"].strip(" km").replace(",", ""))
-    except ValueError:
-        # Si no se logra obtener la distancia entre 2 landing points, se calcula
-        landing1 = getMapValue(analyzer["landingsById"], connection["origin"])
-        landing2 = getMapValue(analyzer["landingsById"], connection["destination"])
-        cableLength = calcLanDistance(landing1, landing2)
+    landing1 = getMapValue(analyzer["landingsById"], connection["origin"])
+    landing2 = getMapValue(analyzer["landingsById"], connection["destination"])
+    cableLength = calcLanDistance(landing1, landing2)
     # Añade el vertice de origen
     vertexA = addConVertex(analyzer, connection["origin"], connection["cable_id"])
     # Añade el vertice de destino
@@ -294,6 +290,10 @@ def addConVertex(analyzer: dict, landing: str, cable: str):
     cable: str -- identificador del cable
     """
     vertexName = landing + "-" + cable
+    # Si ya existe un vertice con esas condiciones
+    if gr.containsVertex(analyzer["connectionsGr"], vertexName):
+        return vertexName
+
     gr.insertVertex(analyzer["connectionsGr"], vertexName)
     landingVerLst = getMapValue(analyzer["landingsById"], landing)["vertices"]
     lt.addLast(landingVerLst, vertexName)
@@ -471,7 +471,7 @@ def calcLanDistance(landingA: dict, landingB: dict) -> float:
     """
     latLon1 = (float(landingA["latitude"]), float(landingA["longitude"]))
     latLon2 = (float(landingB["latitude"]), float(landingB["longitude"]))
-    distaceKm = haversine(latLon1, latLon2)
+    distaceKm = round(haversine(latLon1, latLon2), 2)
 
     return distaceKm
 

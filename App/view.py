@@ -161,7 +161,6 @@ def init():
     print()
     controller.mtt.printTrace()
     print()
-    eoc()
     #Info del primer landing cargado
     print("\n**Primer landing point cargado**")
     printRow([
@@ -184,6 +183,14 @@ def init():
         [lastCountry["CountryName"], lastCountry["Population"], lastCountry["Internet users"]]
     ])
     print()
+    # Mapa
+    print("Creando mapa...")
+    gMap = geoMap.newFullMap()
+    geoMap.addEdges(analyzer, gMap, gr.edges(analyzer["connectionsGr"]))
+    geoMap.addVertices(analyzer, gMap, gr.vertices(analyzer["connectionsGr"]))
+    geoMap.showMap(gMap)
+    print("Abriendo mapa...")
+    # End Mapa
     eoc()
     #Ejecuta el menú principal
     mainMenu(analyzer)
@@ -264,14 +271,5 @@ def getMapValue(map, key):
 """
 MAIN PROGRAM
 """
-try:
-    init()
-    sys.exit(0)
-except RecursionError:
-    print("***MÁXIMA RECURCIÓN ALCANZADA***")
-    crnt_rec_limit = sys.getrecursionlimit()
-    new_rec_limit = crnt_rec_limit * 10
-    print("El límite actual es de", crnt_rec_limit)
-    print("Ahora el programa se ejecutará con un límite de", new_rec_limit)
-    eoc()
-    init()
+sys.setrecursionlimit(10000)
+init()
