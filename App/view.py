@@ -23,7 +23,7 @@
 import config as cf
 import sys
 import controller
-from mapLib import map as geoMap
+import geoMap
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me

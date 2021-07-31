@@ -127,6 +127,21 @@ def loadConnections(analyzer: dict):
         model.addConnection(analyzer, connection)
 
 
+def getLanFromVer(analyzer: dict, vertexName: str):
+    """
+    Obtiene el landing point correspondiente a un vertice del grafo connections.
+
+    Args:
+    -----
+    analyzer: dict -- analizador
+    vertexName: str -- nombre del vertice de la forma "<landingId>-<cableId>"
+
+    Returns
+    -------
+    dict -- diccionario con la información del landing point
+    """
+    return model.getLanFromVer(analyzer, vertexName)
+
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo

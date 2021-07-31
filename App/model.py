@@ -392,6 +392,32 @@ def fNearestLand(analyzer: dict, landing1: dict) -> str:
                 crrntClosest = landing2["landing_point_id"]
 
     return crrntClosest, crrntMinDistance
+
+
+def getLanFromVer(analyzer: dict, vertexName: str):
+    """
+    Obtiene el landing point correspondiente a un vertice del grafo connections.
+
+    Args:
+    -----
+    analyzer: dict -- analizador
+    vertexName: str -- nombre del vertice de la forma "<landingId>-<cableId>"
+
+    Returns
+    -------
+    dict -- diccionario con la información del landing point
+    """
+    # Obtiene el Id a partir del vertexName
+    landPId = vertexName.split("-")[0]
+    # Obtiene el landing a partir del Id
+    landing = getMapValue(analyzer["landingsById"], landPId)
+
+    if landing is None:
+        raise Exception("Landing not found")
+    
+    return landing
+
+
 # Funciones utilizadas para comparar elementos dentro de una lista
 
 # Funciones de ordenamiento
