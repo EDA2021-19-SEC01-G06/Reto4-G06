@@ -20,6 +20,7 @@
  * along withthis program.  If not, see <http://www.gnu.org/licenses/>.
  """
 
+from os import sep
 import config as cf
 import sys
 import controller
@@ -294,10 +295,53 @@ def minimunRoute(analyzer: dict):
     print()
 
 
-def minimumSpanNet():
-    pass
+def minimumSpanNet(analyzer: dict):
+    """
+    REQ 3
+    User input, process and output to find the minimum span
+    tree of connections graph
 
-
+    Args
+    ----
+    analyzer: dict -- analizador
+    """
+    # Process
+    print("Cargando...")
+    ans = controller.minimumSpanNet(analyzer)
+    # Crea un mapa vacio
+    gMap = geoMap.newFullMap()
+    # Obtiene la lista de vertices del MST
+    verticesLst = mp.keySet(ans["MST"]["marked"])
+    # Número de vertices en el MST
+    vertexCnt = 0
+    # Inicializa la variable totalCost
+    totalCost = 0
+    for vertex in lt.iterator(verticesLst):
+        # Añade el vertice al mapa
+        if vertex == ans["orVertex"]:
+            geoMap.addVertex(analyzer, gMap, vertex, "red")
+        else:
+            geoMap.addVertex(analyzer, gMap, vertex)
+            
+        # Obtiene el arco asociado al vertice
+        edgeTo = getMapValue(ans["MST"]["edgeTo"], vertex)
+        if not edgeTo is None:
+            # Suma el costo del arco al costo total del MST
+            totalCost += edgeTo["weight"]
+            # Suma 1 al número de vertices conectados
+            vertexCnt += 1
+            # Añade el arco al mapa
+            geoMap.addEdge(analyzer, gMap, edgeTo)
+    # Output
+    print("\nVertice de origen:", ans["orVertex"])
+    print("Número de vertices conectados:", vertexCnt)
+    print("Costo total del MST:", round(totalCost, 2), " km")
+    #TODO ramam mas larga
+    print("A continuación se mostrará el mapa con el MST.")
+    eoc()
+    print("Cargando mapa...")
+    geoMap.showMap(gMap)
+    print("Abriendo mapa...")
 # ============================
 #       Otras funciones
 # ============================

@@ -1,6 +1,7 @@
 import config
 assert config
 import os
+import random
 
 try:
     import folium
@@ -71,7 +72,7 @@ def addEdge(analyzer: dict, m: folium.Map, edge, addVertices: bool = False):
     orgDest
     latLonA = (float(landingA["latitude"]), float(landingA["longitude"]))
     latLonB = (float(landingB["latitude"]), float(landingB["longitude"]))
-    folium.PolyLine([latLonA, latLonB], popup).add_to(m)
+    folium.PolyLine([latLonA, latLonB], popup, color="red").add_to(m)
 
 
 def addVertices(analyzer: dict, m: folium.Map, verticesLst):
@@ -88,7 +89,7 @@ def addVertices(analyzer: dict, m: folium.Map, verticesLst):
         addVertex(analyzer, m, vertex)
 
 
-def addVertex(analyzer: dict, m: folium.Map, vertex: str):
+def addVertex(analyzer: dict, m: folium.Map, vertex: str, color = None):
     """
     Añade un vertice del grafo conections al mapa, en forma de marcador
     
@@ -97,12 +98,43 @@ def addVertex(analyzer: dict, m: folium.Map, vertex: str):
     analyzer: dict -- analizador
     m: folium.map -- objeto de tipo folium.map
     vertex: srt -- identificador del vertice a añadir
+    color: str -- color del vertice a añadir
     """
+    if color is not None:
+        icon = folium.Icon(color)
+    else:
+        icon = None
+
     landing = controller.getLanFromVer(analyzer, vertex)
     popup = "." * 40 + "<br>Id: " + landing["landing_point_id"] + "<br>" + \
         "Name: " + landing["name"]
     latLon = (float(landing["latitude"]), float(landing["longitude"]))
-    folium.Marker(latLon, popup).add_to(m)
+    folium.Marker(latLon, popup, icon=icon).add_to(m)
+
+
+def genRandomColors(cty: int) -> list:
+    """
+    Genera una lista con colores aleatorios en formato hex
+
+    Args
+    ----
+    cty: int -- cantidad de colores a generar
+
+    Returns
+    -------
+    list -- lista cuyos elementos son strings con colores en formato hex
+    """
+    colorsLst = []
+    r = lambda: random.randint(0,255)
+    for i in range(cty):
+        hexColor = '#%02X%02X%02X' % (r(),r(),r())
+        colorsLst.append(hexColor)
+
+    return colorsLst
+
+
+def addConectedComponents(analyzer: dict, m: folium.Map, components):
+    pass
 
 
 # Map output

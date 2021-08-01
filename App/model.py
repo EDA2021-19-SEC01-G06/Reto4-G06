@@ -23,18 +23,23 @@
  *
  * Dario Correal - Version inicial
  """
-
-import DISClib.Algorithms.Graphs.scc as scc
-from DISClib.Algorithms.Graphs import dijsktra as djk
-import math
+# Set up
+from random import randint
 import config as cf
+assert cf
+# Data estructures
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
-from DISClib.ADT.graph import gr, numEdges, vertices
+from DISClib.ADT.graph import gr
+# Algorithms
+import DISClib.Algorithms.Graphs.scc as scc
+from DISClib.Algorithms.Graphs import dijsktra as djk
+from DISClib.Algorithms.Graphs import prim as prm
 from DISClib.Algorithms.Sorting import mergesort as sa
+# Others
+import math
 from haversineLib.haversine import haversine
-assert cf
 
 """
 Se define la estructura de un catálogo de videos. El catálogo tendrá dos listas, una para los videos, otra para las categorias de
@@ -511,6 +516,34 @@ def minimumRoute(analyzer: dict, countryName1: str, countryName2: str):
         "dest"      :   vertex2
     }
 
+    return returnDict
+
+
+def minimumSpanNet(analyzer: dict):
+    """
+    Encuentra la red de expansión mínima del grafo conecciones
+
+    Args
+    ----
+    analyzer: dict -- analizador
+
+    Returns
+    -------
+    TODO
+    """
+    # Crea al estructura de busqueda
+    search = prm.PrimMST(analyzer["connectionsGr"])
+    # Vertice aleatorio desde el cual relajar los arcos
+    verticesLst = gr.vertices(analyzer["connectionsGr"])
+    lstPos = randint(1, lt.size(verticesLst))
+    vertex = lt.getElement(verticesLst, lstPos)
+    # Obtiene el grafo con el MST
+    MinST = prm.prim(analyzer["connectionsGr"], search, vertex)
+    # Crea la estructura de retorno
+    returnDict = {
+        "MST"       :   MinST,
+        "orVertex"  :   vertex
+    }
     return returnDict
 
 

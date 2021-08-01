@@ -169,6 +169,22 @@ def minimumRoute(analyzer: dict, countryName1: str, countryName2: str):
         dest:   vertice de destino
     """
     return model.minimumRoute(analyzer, countryName1, countryName2)
+
+
+def minimumSpanNet(analyzer: dict):
+    """
+    Encuentra la red de expansión mínima del grafo conecciones
+
+    Args
+    ----
+    analyzer: dict -- analizador
+
+    Returns
+    -------
+    TODO
+    """
+    return model.minimumSpanNet(analyzer)
+
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
