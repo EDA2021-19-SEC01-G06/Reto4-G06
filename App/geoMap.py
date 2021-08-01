@@ -1,7 +1,18 @@
 import config
 assert config
 import os
-import folium
+
+try:
+    import folium
+except ModuleNotFoundError:
+    msg =   "\n*****************************************************************************\n" + \
+            "No tiene la librería folium instalada.\n" + \
+            "La librería folium es necesaria para mostrar los mapas de los requerimientos.\n" + \
+            "Instale la librería ejecutando el siguiente comando en la consola:\n" + \
+            "'python -m pip install folium'\n" + \
+            "*****************************************************************************"
+    raise ModuleNotFoundError(msg)
+
 import subprocess
 import platform
 from DISClib.ADT import list as lt
