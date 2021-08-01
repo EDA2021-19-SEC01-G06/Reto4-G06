@@ -232,7 +232,7 @@ def findClusters(analyzer: dict):
     """
     # User input
     landing1Name = userInput(
-        "Nombre del landing point 1 (Ej: Jakarta, Indonecia): ",
+        "Nombre del landing point 1 (Ej: Jakarta, Indonesia): ",
         validateMap=analyzer["landingsByName"],
         notFPromt="Nombre no encontrado, intente nuevamente")
     landing2Name = userInput(

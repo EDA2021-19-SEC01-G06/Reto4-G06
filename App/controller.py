@@ -141,6 +141,8 @@ def getLanFromVer(analyzer: dict, vertexName: str):
     dict -- diccionario con la información del landing point
     """
     return model.getLanFromVer(analyzer, vertexName)
+def findClusters(analyzer, landing1Name, landing2Name):
+    return model.findClusters(analyzer, landing1Name, landing2Name)
 
 # Funciones de ordenamiento
 

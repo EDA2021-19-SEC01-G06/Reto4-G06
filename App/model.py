@@ -25,12 +25,14 @@
  """
 
 
+from DISClib.DataStructures.bstnode import getValue
+from DISClib.Algorithms.Graphs.scc import KosarajuSCC, connectedComponents, sccCount, stronglyConnected
 import math
 import config as cf
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
-from DISClib.ADT.graph import gr
+from DISClib.ADT.graph import gr, numEdges, vertices
 from DISClib.Algorithms.Sorting import mergesort as sa
 from haversineLib.haversine import haversine
 assert cf
@@ -325,6 +327,21 @@ def groupLandings(analyzer: dict):
 
 
 # Funciones para creacion de datos
+def findClusters(analyzer, landing1Name, landing2Name):
+
+    componentsscc=(KosarajuSCC(analyzer['connectionsGr']))
+    landingid1=getValue(mp.get(analyzer['landingsByName'],landing1Name))
+    landingid2=getValue(mp.get(analyzer['landingsByName'],landing2Name))
+    print(vertices(analyzer['connectionsGr']))
+    if stronglyConnected(componentsscc) == True:
+       stronglyc="los dos landing points estan en el mismo cluster"
+    else:
+        stronglyc="los dos landing points NO estan en el mismo cluster"
+    
+    totalscc=connectedComponents(componentsscc)
+
+    return print((stronglyc,totalscc))
+
 
 def newLandingNode(analyzer: dict, name: str, lat: str, lon: str, lanPId: str = None, vertices = None):
     """
