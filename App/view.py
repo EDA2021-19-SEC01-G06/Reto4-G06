@@ -183,14 +183,6 @@ def init():
         [lastCountry["CountryName"], lastCountry["Population"], lastCountry["Internet users"]]
     ])
     print()
-    # Mapa
-    print("Creando mapa...")
-    gMap = geoMap.newFullMap()
-    geoMap.addEdges(analyzer, gMap, gr.edges(analyzer["connectionsGr"]))
-    geoMap.addVertices(analyzer, gMap, gr.vertices(analyzer["connectionsGr"]))
-    geoMap.showMap(gMap)
-    print("Abriendo mapa...")
-    # End Mapa
     eoc()
     #Ejecuta el menú principal
     mainMenu(analyzer)

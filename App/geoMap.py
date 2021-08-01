@@ -1,16 +1,7 @@
+import config
+assert config
 import os
-try:
-    import folium
-except ModuleNotFoundError:
-    msg = "\n************************************************************************\n" + \
-        "No se encontró la librería Folium\n" + \
-        "Esta librería es requerida para crear los mapas de los requerimientos\n" + \
-        "Ejecute el siguiente comando en la consola para instalar la librería\n" + \
-        "'python -m pip install folium'\n" + \
-        "***************************************************************************"
-    raise ModuleNotFoundError(msg)
-
-
+import folium
 import subprocess
 import platform
 from DISClib.ADT import list as lt
@@ -28,6 +19,7 @@ map_path = os.path.join(temp_folder, "map.html")
 # Map creation
 def newFullMap():
     return folium.Map([40, 0], zoom_start=2)
+
 
 def addEdges(analyzer: dict, m: folium.Map, edgeList):
     """
@@ -71,6 +63,7 @@ def addVertices(analyzer: dict, m: folium.Map, verticesLst):
         folium.Marker(latLon, popup).add_to(m)
 
 
+# Map output
 def showMap(m: folium.Map):
     """
     Abre el mapa en el navegador por defecto del sistema.
