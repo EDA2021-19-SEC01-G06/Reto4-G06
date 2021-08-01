@@ -1,3 +1,5 @@
+import config
+assert config
 import os
 import folium
 import subprocess
@@ -17,6 +19,7 @@ map_path = os.path.join(temp_folder, "map.html")
 # Map creation
 def newFullMap():
     return folium.Map([40, 0], zoom_start=2)
+
 
 def addEdges(analyzer: dict, m: folium.Map, edgeList):
     """
@@ -60,6 +63,7 @@ def addVertices(analyzer: dict, m: folium.Map, verticesLst):
         folium.Marker(latLon, popup).add_to(m)
 
 
+# Map output
 def showMap(m: folium.Map):
     """
     Abre el mapa en el navegador por defecto del sistema.
