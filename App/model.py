@@ -26,7 +26,7 @@
 
 
 from DISClib.DataStructures.bstnode import getValue
-from DISClib.Algorithms.Graphs.scc import KosarajuSCC, connectedComponents, sccCount, stronglyConnected
+import DISClib.Algorithms.Graphs.scc as scc
 import math
 import config as cf
 from DISClib.ADT import list as lt
@@ -342,8 +342,9 @@ def findClusters(analyzer: dict, landing1Name: str, landing2Name: str):
     -------
     TODO
     """
-    componentsscc = (KosarajuSCC(analyzer['connectionsGr']))
-    totalscc = connectedComponents(componentsscc)
+    # Encuentra los componentes fuertemente conectados
+    componentsscc = (scc.KosarajuSCC(analyzer['connectionsGr']))
+    totalscc = scc.connectedComponents(componentsscc)
     landingid1 = getMapValue(analyzer['landingsByName'],landing1Name)
     landingid2 = getMapValue(analyzer['landingsByName'],landing2Name)
     vertx = vertices(analyzer['connectionsGr'])
@@ -352,11 +353,11 @@ def findClusters(analyzer: dict, landing1Name: str, landing2Name: str):
         element = lt.getElement(vertx,i)
         element2 = lt.getElement(vertx,i)
         if landingid1 == element.split("-")[0] or landingid2 == element2.split("-")[0]:
-            if stronglyConnected(componentsscc,element,element2) == True:
+            if scc.stronglyConnected(componentsscc,element,element2) == True:
                 stronglyc = "los dos landing points estan en el mismo cluster"
             else:
                 stronglyc = "los dos landing points NO estan en el mismo cluster"
-    return (stronglyc,totalscc)
+    return (stronglyc, totalscc)
 
 
 def newLandingNode(analyzer: dict, name: str, lat: str, lon: str, lanPId: str = None, vertices = None):

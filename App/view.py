@@ -28,6 +28,7 @@ from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
 from DISClib.ADT.graph import gr
+import threading
 assert cf
 
 
@@ -264,5 +265,8 @@ def getMapValue(map, key):
 """
 MAIN PROGRAM
 """
-sys.setrecursionlimit(10000)
-init()
+if __name__ == "__main__":
+    threading.stack_size(67108864)  # 64MB stack
+    sys.setrecursionlimit(2 ** 20)
+    thread = threading.Thread(target=init)
+    thread.start()
