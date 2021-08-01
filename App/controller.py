@@ -148,8 +148,7 @@ def findClusters(analyzer, landing1Name, landing2Name):
     TODO documentación
     """
     return model.findClusters(analyzer, landing1Name, landing2Name)
-def minimunRoute(analyzer):
-    model.minimunRoute(analyzer)
+
 
 
 def minimumRoute(analyzer: dict, countryName1: str, countryName2: str):
