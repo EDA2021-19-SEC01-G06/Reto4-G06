@@ -234,7 +234,8 @@ def findClusters(analyzer: dict):
     # Process
     ans = controller.findClusters(analyzer, landing1Name, landing2Name)
     # Output
-
+    print( ans[0] + "\n"
+                "El número total de clústeres presentes en la red es:  " + str(ans[1]))
 
 def minimunRoute():
     pass
