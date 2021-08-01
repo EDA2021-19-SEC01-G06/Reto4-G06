@@ -327,22 +327,35 @@ def groupLandings(analyzer: dict):
 
 
 # Funciones para creacion de datos
-def findClusters(analyzer, landing1Name, landing2Name):
+def findClusters(analyzer: dict, landing1Name: str, landing2Name: str):
+    """
+    Encuentra los componentes fuertemente conectados del grafo conecciones
+    y revisa si dos landing points están fuertemente conectados.
 
-    componentsscc=(KosarajuSCC(analyzer['connectionsGr']))
-    totalscc=connectedComponents(componentsscc)
-    landingid1=getMapValue(analyzer['landingsByName'],landing1Name)
-    landingid2=getMapValue(analyzer['landingsByName'],landing2Name)
-    vertx=vertices(analyzer['connectionsGr'])
-    stronglyc="no funciono"
+    Args
+    ----
+    analyzer: dict -- analizador
+    landing1Name: str -- nombre del landing point 1
+    landing2Name: str -- nombre del landing point 2
+
+    Returns
+    -------
+    TODO
+    """
+    componentsscc = (KosarajuSCC(analyzer['connectionsGr']))
+    totalscc = connectedComponents(componentsscc)
+    landingid1 = getMapValue(analyzer['landingsByName'],landing1Name)
+    landingid2 = getMapValue(analyzer['landingsByName'],landing2Name)
+    vertx = vertices(analyzer['connectionsGr'])
+    stronglyc = "no funcionó"
     for i  in range(lt.size(vertx)):
-        element=lt.getElement(vertx,i)
-        element2=lt.getElement(vertx,i)
+        element = lt.getElement(vertx,i)
+        element2 = lt.getElement(vertx,i)
         if landingid1 == element.split("-")[0] or landingid2 == element2.split("-")[0]:
             if stronglyConnected(componentsscc,element,element2) == True:
-                stronglyc="los dos landing points estan en el mismo cluster"
+                stronglyc = "los dos landing points estan en el mismo cluster"
             else:
-                stronglyc="los dos landing points NO estan en el mismo cluster"
+                stronglyc = "los dos landing points NO estan en el mismo cluster"
     return (stronglyc,totalscc)
 
 
