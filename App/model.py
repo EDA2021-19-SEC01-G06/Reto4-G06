@@ -494,7 +494,7 @@ def minimumRoute(analyzer: dict, countryName1: str, countryName2: str):
     # Obtiene la información de los paises
     countryNode1 = getMapValue(analyzer["countries"], countryName1)
     countryNode2 = getMapValue(analyzer["countries"], countryName2)
-    # Obtiene el vertice correspondiente la capital 2
+    # Obtiene el vertice correspondiente la capital 1
     lanName1 = (countryNode1["CapitalName"] + ", " +  countryNode1["CountryName"]).strip().lower()
     lanId1 = getMapValue(analyzer["landingsByName"], lanName1)
     lanNode1 = getMapValue(analyzer["landingsById"], lanId1)
@@ -511,6 +511,7 @@ def minimumRoute(analyzer: dict, countryName1: str, countryName2: str):
         return {"status":   0}
     # Encuentra la ruta de costo mínimo entre el origen y el destino
     path = djk.pathTo(paths, vertex2)
+    print (path)
     # Crea la estructura de retorno
     returnDict = {
         "status"    :   1,
