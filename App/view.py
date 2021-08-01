@@ -240,13 +240,13 @@ def findClusters(analyzer: dict):
         print("Los landing points se encuentran fuertemente conectados")
     else:
         print("Los landing points NO se encuentran fuertemente conectados")
-    eoc()
     # Map
+    print("A continuación se mostrará el mapa.")
+    eoc()
     # TODO encontrar ruta entre los dos vertices
     print("Creando mapa...")
     gMap = geoMap.newFullMap()
-    geoMap.addVertex(analyzer, gMap, ans["vertexA"])
-    geoMap.addVertex(analyzer, gMap, ans["vertexB"])
+    geoMap.addConectedComponents(analyzer, gMap, ans["idscc"], ans["components"])
     geoMap.showMap(gMap)
     print("Abriendo mapa...")
 

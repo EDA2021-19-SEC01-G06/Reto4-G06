@@ -101,7 +101,7 @@ def addVertex(analyzer: dict, m: folium.Map, vertex: str, color = None):
     color: str -- color del vertice a añadir
     """
     if color is not None:
-        icon = folium.Icon(color)
+        icon = folium.Icon(icon_color=color)
     else:
         icon = None
 
@@ -133,8 +133,29 @@ def genRandomColors(cty: int) -> list:
     return colorsLst
 
 
-def addConectedComponents(analyzer: dict, m: folium.Map, components):
-    pass
+def addConectedComponents(analyzer: dict, m: folium.Map, idsccMp, sccCty: int):
+    """
+    Añade los vertices de los componentes fuertemente conectados al mapa.
+    Cada componente fuertemente conectado está representado por un color de vertice
+
+    Args
+    ----
+    analyzer: dict -- analizador
+    m: folium.Map -- objeto de tipo folium.Map
+    idsccMp: TAD map cuyas llaves son un vertice y los valores son el id
+        del componente fuertemente conectado al que pertenece el vertice
+    sccCty: int -- cantidad de elementos fuertemente conectados
+    """
+    # Crea la lista de colores
+    colorLst = genRandomColors(sccCty)
+
+    # Ciclo por los vertices
+    verticesLst = mp.keySet(idsccMp)
+    for vertex in lt.iterator(verticesLst):
+        # Id del componentefuertemente conectado
+        sccId = int(mp.get(idsccMp, vertex)["value"])
+        color = colorLst[sccId - 1]
+        addVertex(analyzer, m, vertex, color)
 
 
 # Map output

@@ -443,6 +443,8 @@ def findClusters(analyzer: dict, landing1Name: str, landing2Name: str):
         "stronglyC": True si los landings están fuertemente conectados o False
             si no lo están
         "components": (int) número de componentes fuertemente conectados
+        "idscc": TAD map cuyas llaves son un vertice y los valores son el id
+            del componente fuertemente conectado al que pertenece el vertice
     """
     # Encuentra los componentes fuertemente conectados
     componentsscc = (scc.KosarajuSCC(analyzer['connectionsGr']))
@@ -464,7 +466,8 @@ def findClusters(analyzer: dict, landing1Name: str, landing2Name: str):
         "vertexA"       :   vertex1,
         "vertexB"       :   vertex2,
         "stronglyC"     :   stronglyC,
-        "components"    :   totalscc
+        "components"    :   totalscc,
+        "idscc"         :   componentsscc["idscc"]
     }
     
     return returnDict
