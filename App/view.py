@@ -27,7 +27,7 @@ import geoMap
 from DISClib.ADT import list as lt
 from DISClib.ADT import map as mp
 from DISClib.DataStructures import mapentry as me
-from DISClib.ADT.graph import gr
+from DISClib.ADT.graph import edges, gr
 assert cf
 
 
@@ -200,7 +200,7 @@ def mainMenu(analyzer):
             findClusters(analyzer)
         elif int(inputs[0]) == 2:
             #REQ 2
-            minimunRoute()
+            minimunRoute(analyzer)
         elif int(inputs[0]) == 3:
             #REQ3
             minimumSpanNet()
@@ -237,8 +237,9 @@ def findClusters(analyzer: dict):
     print( ans[0] + "\n"
                 "El número total de clústeres presentes en la red es:  " + str(ans[1]))
 
-def minimunRoute():
-    pass
+def minimunRoute(analyzer):
+    ans=controller.minimunRoute(analyzer)
+    return ans
 
 
 def minimumSpanNet():

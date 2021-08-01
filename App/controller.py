@@ -143,6 +143,8 @@ def getLanFromVer(analyzer: dict, vertexName: str):
     return model.getLanFromVer(analyzer, vertexName)
 def findClusters(analyzer, landing1Name, landing2Name):
     return model.findClusters(analyzer, landing1Name, landing2Name)
+def minimunRoute(analyzer):
+    model.minimunRoute(analyzer)
 
 # Funciones de ordenamiento
 
