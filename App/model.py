@@ -24,9 +24,8 @@
  * Dario Correal - Version inicial
  """
 
-
-from DISClib.DataStructures.bstnode import getValue
-from DISClib.Algorithms.Graphs.scc import KosarajuSCC, connectedComponents, sccCount, stronglyConnected
+import DISClib.Algorithms.Graphs.scc as scc
+from DISClib.Algorithms.Graphs import dijsktra as djk
 import math
 import config as cf
 from DISClib.ADT import list as lt
@@ -327,24 +326,6 @@ def groupLandings(analyzer: dict):
 
 
 # Funciones para creacion de datos
-def findClusters(analyzer, landing1Name, landing2Name):
-
-    componentsscc=(KosarajuSCC(analyzer['connectionsGr']))
-    totalscc=connectedComponents(componentsscc)
-    landingid1=getMapValue(analyzer['landingsByName'],landing1Name)
-    landingid2=getMapValue(analyzer['landingsByName'],landing2Name)
-    vertx=vertices(analyzer['connectionsGr'])
-    stronglyc="no funciono"
-    for i  in range(lt.size(vertx)):
-        element=lt.getElement(vertx,i)
-        element2=lt.getElement(vertx,i)
-        if landingid1 == element.split("-")[0] or landingid2 == element2.split("-")[0]:
-            if stronglyConnected(componentsscc,element,element2) == True:
-                stronglyc="los dos landing points estan en el mismo cluster"
-            else:
-                stronglyc="los dos landing points NO estan en el mismo cluster"
-    return (stronglyc,totalscc)
-
 
 def newLandingNode(analyzer: dict, name: str, lat: str, lon: str, lanPId: str = None, vertices = None):
     """
@@ -436,6 +417,101 @@ def getLanFromVer(analyzer: dict, vertexName: str):
         raise Exception("Landing not found")
     
     return landing
+
+
+def findClusters(analyzer: dict, landing1Name: str, landing2Name: str):
+    """
+    Encuentra los componentes fuertemente conectados del grafo conecciones
+    y revisa si dos landing points están fuertemente conectados.
+
+    Args
+    ----
+    analyzer: dict -- analizador
+    landing1Name: str -- nombre del landing point 1
+    landing2Name: str -- nombre del landing point 2
+
+    Returns
+    -------
+    dict -- diccionario que contiene las siguientes llaves:
+        "vertexA": vertice correspondiente al landing 1 pasado por parámetro
+        "vertexB": vertice correspondiente al landing 2 pasado por parámetro
+        "stronglyC": True si los landings están fuertemente conectados o False
+            si no lo están
+        "components": (int) número de componentes fuertemente conectados
+    """
+    # Encuentra los componentes fuertemente conectados
+    componentsscc = (scc.KosarajuSCC(analyzer['connectionsGr']))
+    # Obtiene el total de componentes conectados
+    totalscc = scc.connectedComponents(componentsscc)
+    # Obtiene el id de los landings
+    landingid1 = getMapValue(analyzer['landingsByName'], landing1Name)
+    landingid2 = getMapValue(analyzer['landingsByName'], landing2Name)
+    # Obtiene la información completa de los landings
+    landingNode1 = getMapValue(analyzer["landingsById"], landingid1)
+    landingNode2 = getMapValue(analyzer["landingsById"], landingid2)
+    # Obtiene un vertice correspondiente a cada landing
+    vertex1 = lt.getElement(landingNode1["vertices"], 1)
+    vertex2 = lt.getElement(landingNode2["vertices"], 1)
+    # Revisa si los vertices están fuertemente conectados.
+    stronglyC = scc.stronglyConnected(componentsscc, vertex1, vertex2)
+    # Crea la estructura a retornar
+    returnDict = {
+        "vertexA"       :   vertex1,
+        "vertexB"       :   vertex2,
+        "stronglyC"     :   stronglyC,
+        "components"    :   totalscc
+    }
+    
+    return returnDict
+
+
+def minimumRoute(analyzer: dict, countryName1: str, countryName2: str):
+    """
+    Encuentra la ruta mínima entre las capitales de dos paises.
+
+    Args
+    ----
+    analyzer: dict -- analizador
+    countryName1: str -- nombre del país 1
+    countryName2: str -- nombre del país 2
+
+    Returns
+    -------
+    dict -- diccionario con llaves:
+        status: (int) 0 si NO se encontró la ruta, 1 si se encontró
+        path:   información de la ruta
+        origin: vertice de origen
+        dest:   vertice de destino
+    """
+    # Obtiene la información de los paises
+    countryNode1 = getMapValue(analyzer["countries"], countryName1)
+    countryNode2 = getMapValue(analyzer["countries"], countryName2)
+    # Obtiene el vertice correspondiente la capital 2
+    lanName1 = (countryNode1["CapitalName"] + ", " +  countryNode1["CountryName"]).strip().lower()
+    lanId1 = getMapValue(analyzer["landingsByName"], lanName1)
+    lanNode1 = getMapValue(analyzer["landingsById"], lanId1)
+    vertex1 = lt.getElement(lanNode1["vertices"], 1)
+    # Obtiene el vertice correspondiente a la capital 2
+    lanName2 = (countryNode2["CapitalName"] + ", " +  countryNode2["CountryName"]).strip().lower()
+    lanId2 = getMapValue(analyzer["landingsByName"], lanName2)
+    lanNode2 = getMapValue(analyzer["landingsById"], lanId2)
+    vertex2 = lt.getElement(lanNode2["vertices"], 1)
+    # Encuentra los caminos mínimos del countryNode1 a todos los demás
+    paths = djk.Dijkstra(analyzer["connectionsGr"], vertex1)
+    # Verifica si existe una ruta entre los dos puntos
+    if not djk.hasPathTo(paths, vertex2):
+        return {"status":   0}
+    # Encuentra la ruta de costo mínimo entre el origen y el destino
+    path = djk.pathTo(paths, vertex2)
+    # Crea la estructura de retorno
+    returnDict = {
+        "status"    :   1,
+        "path"      :   path,
+        "origin"    :   vertex1,
+        "dest"      :   vertex2
+    }
+
+    return returnDict
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista

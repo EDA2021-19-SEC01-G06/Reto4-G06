@@ -141,11 +141,36 @@ def getLanFromVer(analyzer: dict, vertexName: str):
     dict -- diccionario con la información del landing point
     """
     return model.getLanFromVer(analyzer, vertexName)
+
+
 def findClusters(analyzer, landing1Name, landing2Name):
+    """
+    TODO documentación
+    """
     return model.findClusters(analyzer, landing1Name, landing2Name)
 def minimunRoute(analyzer):
     model.minimunRoute(analyzer)
 
+
+def minimumRoute(analyzer: dict, countryName1: str, countryName2: str):
+    """
+    Encuentra la ruta mínima entre las capitales de dos paises.
+
+    Args
+    ----
+    analyzer: dict -- analizador
+    countryName1: str -- nombre del país 1
+    countryName2: str -- nombre del país 2
+
+    Returns
+    -------
+    dict -- diccionario con llaves:
+        status: (int) 0 si NO se encontró la ruta, 1 si se encontró
+        path:   información de la ruta
+        origin: vertice de origen
+        dest:   vertice de destino
+    """
+    return model.minimumRoute(analyzer, countryName1, countryName2)
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo
