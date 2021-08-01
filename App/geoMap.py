@@ -32,7 +32,7 @@ def newFullMap():
     return folium.Map([40, 0], zoom_start=2)
 
 
-def addEdges(analyzer: dict, m: folium.Map, edgeList):
+def addEdges(analyzer: dict, m: folium.Map, edgeList, addVertices: bool = False):
     """
     Añade arcos del grafo connections al mapa, en forma de lineas
 
@@ -41,18 +41,37 @@ def addEdges(analyzer: dict, m: folium.Map, edgeList):
     analyzer: dict -- analizador
     m: folium.Map -- objeto de tipo folium.Map
     edgeList -- TAD lista con la lista de los arcos
+    addVertices: bool -- True para agregar los vertices del arco al mapa, o
+    False para agregar solo el arco, sin los vertices
     """
     for edge in lt.iterator(edgeList):
-        landingA = controller.getLanFromVer(analyzer, edge["vertexA"])
-        landingB = controller.getLanFromVer(analyzer, edge["vertexB"])
-        cableName = edge["vertexA"].split("-")[1]
-        weight = str(edge["weight"])
-        orgDest = landingA["landing_point_id"]  + " &rarr; " + landingB["landing_point_id"]
-        popup = "." * 40 + "<br>" + "Cable: " + cableName + "<br>" + "Distance: " + weight + " km<br>" + \
-        orgDest
-        latLonA = (float(landingA["latitude"]), float(landingA["longitude"]))
-        latLonB = (float(landingB["latitude"]), float(landingB["longitude"]))
-        folium.PolyLine([latLonA, latLonB], popup).add_to(m)
+        addEdge(analyzer, m, edge, addVertices)
+
+def addEdge(analyzer: dict, m: folium.Map, edge, addVertices: bool = False):
+    """
+    Añade un arco al mapa en forma de linea.
+
+    Args
+    ----
+    analyzer: dict -- analizador
+    m: folium.Map -- objeto de tipo folium.Map
+    edge -- arco a añadir
+    addVertices: True para agregar los vertices del arco al mapa, o
+    False para agregar solo el arco, sin los vertices
+    """
+    if addVertices:
+        addVertex(analyzer, m, edge["vertexA"])
+        addVertex(analyzer, m, edge["vertexB"])
+    landingA = controller.getLanFromVer(analyzer, edge["vertexA"])
+    landingB = controller.getLanFromVer(analyzer, edge["vertexB"])
+    cableName = edge["vertexA"].split("-")[1]
+    weight = str(edge["weight"])
+    orgDest = landingA["landing_point_id"]  + " &rarr; " + landingB["landing_point_id"]
+    popup = "." * 40 + "<br>" + "Cable: " + cableName + "<br>" + "Distance: " + weight + " km<br>" + \
+    orgDest
+    latLonA = (float(landingA["latitude"]), float(landingA["longitude"]))
+    latLonB = (float(landingB["latitude"]), float(landingB["longitude"]))
+    folium.PolyLine([latLonA, latLonB], popup).add_to(m)
 
 
 def addVertices(analyzer: dict, m: folium.Map, verticesLst):
@@ -66,12 +85,24 @@ def addVertices(analyzer: dict, m: folium.Map, verticesLst):
     verticesLst -- TAD lista con lista de vertices a añadir
     """
     for vertex in lt.iterator(verticesLst):
-        landing = controller.getLanFromVer(analyzer, vertex)
-        cableName = vertex.split("-")[1]
-        popup = "." * 40 + "<br>Id: " + landing["landing_point_id"] + "<br>" + \
-            "Name: " + landing["name"]
-        latLon = (float(landing["latitude"]), float(landing["longitude"]))
-        folium.Marker(latLon, popup).add_to(m)
+        addVertex(analyzer, m, vertex)
+
+
+def addVertex(analyzer: dict, m: folium.Map, vertex: str):
+    """
+    Añade un vertice del grafo conections al mapa, en forma de marcador
+    
+    Args
+    ----
+    analyzer: dict -- analizador
+    m: folium.map -- objeto de tipo folium.map
+    vertex: srt -- identificador del vertice a añadir
+    """
+    landing = controller.getLanFromVer(analyzer, vertex)
+    popup = "." * 40 + "<br>Id: " + landing["landing_point_id"] + "<br>" + \
+        "Name: " + landing["name"]
+    latLon = (float(landing["latitude"]), float(landing["longitude"]))
+    folium.Marker(latLon, popup).add_to(m)
 
 
 # Map output

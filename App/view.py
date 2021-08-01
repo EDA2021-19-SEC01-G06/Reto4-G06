@@ -136,7 +136,6 @@ def userInput(prompt: str, Intype = str, validateFunc = None, validateMap = None
                 print(notFPromt)
             first = False
             inputs = Intype(input(prompt).strip().lower())
-            mapValue = getMapValue(validateMap, inputs)
         
         return inputs
     
@@ -201,10 +200,10 @@ def mainMenu(analyzer):
             findClusters(analyzer)
         elif int(inputs[0]) == 2:
             #REQ 2
-            minimunRoute()
+            minimunRoute(analyzer)
         elif int(inputs[0]) == 3:
             #REQ3
-            minimumSpanNet()
+            minimumSpanNet(analyzer)
         else:
             print("Fin de la ejecución")
             sys.exit(0)
@@ -235,11 +234,64 @@ def findClusters(analyzer: dict):
     # Process
     ans = controller.findClusters(analyzer, landing1Name, landing2Name)
     # Output
-    print( ans[0] + "\n"
-                "El número total de clústeres presentes en la red es:  " + str(ans[1]))
+    print("El total de componentes fuertemente conectados es:", ans["components"])
+    if ans["stronglyC"]:
+        print("Los landing points se encuentran fuertemente conectados")
+    else:
+        print("Los landing points NO se encuentran fuertemente conectados")
+    eoc()
+    # Map
+    # TODO encontrar ruta entre los dos vertices
+    print("Creando mapa...")
+    gMap = geoMap.newFullMap()
+    geoMap.addVertex(analyzer, gMap, ans["vertexA"])
+    geoMap.addVertex(analyzer, gMap, ans["vertexB"])
+    geoMap.showMap(gMap)
+    print("Abriendo mapa...")
 
-def minimunRoute():
-    pass
+
+def minimunRoute(analyzer: dict):
+    """
+    REQ 2
+    User input, process and output to find the minimun route
+    between two country capitals.
+
+    Args
+    ----
+    analyzer: dict -- analizador
+    """
+    # Input
+    countryName1 = userInput(
+        "Ingrese el nombre del país 1 (ej. Belgium): ",
+        validateMap=analyzer["countries"],
+        notFPromt="País no encontrado, intente nuevamente"
+    )
+    countryName2 = userInput(
+        "Ingrese el nombre del país 2 (ej. Germany): ",
+        validateMap=analyzer["countries"],
+        notFPromt="País no encontrado, intente nuevamente"
+    )
+    # Process
+    print("Cargando...")
+    ans = controller.minimumRoute(analyzer, countryName1, countryName2)
+    # Output
+    # Si no hay ruta
+    if ans["status"] == 0:
+        print("No se encontró una ruta entre las capitales de los dos paises")
+        eoc()
+        return
+    # Si hay ruta
+    routeLen = lt.size(ans["path"])
+    print("La ruta es de longitud", routeLen)
+    print("A continuación se mostrará la ruta en un mapa.")
+    eoc()
+    # Map
+    print("Creando mapa...")
+    gMap = geoMap.newFullMap()
+    geoMap.addEdges(analyzer, gMap, ans["path"], True)
+    geoMap.showMap(gMap)
+    print("Abriendo mapa...")
+    print()
 
 
 def minimumSpanNet():
