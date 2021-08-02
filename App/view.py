@@ -308,6 +308,11 @@ def minimumSpanNet(analyzer: dict):
     # Process
     print("Cargando...")
     ans = controller.minimumSpanNet(analyzer)
+    # Obtiene el tamaño de la rama mas larga
+    lngstPathLen = controller.longestMSTbranch(
+        ans["MST"]["edgeTo"],
+        ans["orVertex"]
+    )
     # Crea un mapa vacio
     gMap = geoMap.newFullMap()
     # Obtiene la lista de vertices del MST
@@ -336,6 +341,7 @@ def minimumSpanNet(analyzer: dict):
     print("\nVertice de origen:", ans["orVertex"])
     print("Número de vertices conectados:", vertexCnt)
     print("Costo total del MST:", round(totalCost, 2), " km")
+    print("Tamaño de la rama mas larga:", lngstPathLen)
     #TODO ramam mas larga
     print("A continuación se mostrará el mapa con el MST.")
     eoc()

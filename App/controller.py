@@ -185,6 +185,24 @@ def minimumSpanNet(analyzer: dict):
     """
     return model.minimumSpanNet(analyzer)
 
+
+def longestMSTbranch(edgesTo, originVer: str):
+    """
+    Encuentra la rama mas larga del MST.
+
+    Args
+    ----
+    analyzer: dict -- analizador
+    edgesTo -- TAD map edgesTo del MST devuelto por el algorimo PRIM
+    originVer: str -- Vertice de origen con el que se calculó el MST
+
+    Returns
+    -------
+    int -- longitud de la rama mas larga
+    """
+    return model.longestMSTbranch(edgesTo, originVer)
+
+    
 # Funciones de ordenamiento
 
 # Funciones de consulta sobre el catálogo

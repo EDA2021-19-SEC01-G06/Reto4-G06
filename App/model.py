@@ -24,6 +24,7 @@
  * Dario Correal - Version inicial
  """
 # Set up
+from DISClib.DataStructures.chaininghashtable import get
 from random import randint
 import config as cf
 assert cf
@@ -511,7 +512,6 @@ def minimumRoute(analyzer: dict, countryName1: str, countryName2: str):
         return {"status":   0}
     # Encuentra la ruta de costo mínimo entre el origen y el destino
     path = djk.pathTo(paths, vertex2)
-    print (path)
     # Crea la estructura de retorno
     returnDict = {
         "status"    :   1,
@@ -549,6 +549,63 @@ def minimumSpanNet(analyzer: dict):
         "orVertex"  :   vertex
     }
     return returnDict
+
+
+def longestMSTbranch(edgesTo, originVer: str):
+    """
+    Encuentra la rama mas larga del MST.
+
+    Args
+    ----
+    analyzer: dict -- analizador
+    edgesTo -- TAD map edgesTo del MST devuelto por el algorimo PRIM
+    originVer: str -- Vertice de origen con el que se calculó el MST
+
+    Returns
+    -------
+    int -- longitud de la rama mas larga
+    """
+    markedMap = mp.newMap(loadfactor=1)
+    longestPathLen = -1
+    vertexLst = mp.keySet(edgesTo)
+    for vertex in lt.iterator(vertexLst):
+        pathLen = pathToOrigin(edgesTo, markedMap, vertex, originVer)
+        if pathLen > longestPathLen:
+            longestPathLen = pathLen
+
+    return longestPathLen
+
+def pathToOrigin(edgesTo, markedMap, vertex: str, originVer: str):
+    """
+    Calcula la longitud del camino de un vertice al origen, de un MST.
+
+    Args
+    ----
+    edgesTo -- TAD map edgesTo del MST devuelto por el algorimo PRIM
+    markedMap -- TAD map con los vertices que ya se han recorrido.
+        La llave es el vertice y el valor, la longitud del camino hasta el
+        origen
+    vertex: str -- vertice a consultar
+    originVer: str -- vertice de origen
+    """
+    verEdge = getMapValue(edgesTo, vertex)
+    # Caso base : el vertice ya se recorrió previamente
+    if mp.contains(markedMap, vertex):
+        # Retorna la longitud del camno hasta el origen
+        pathLen = getMapValue(markedMap, vertex)
+        return pathLen
+    # Caso base 2: No hay mas camino hacia atras
+    if verEdge is None:
+        pathLen = 1
+        mp.put(markedMap, vertex, pathLen)
+        return pathLen
+    
+    # Recursión (si no es origen y no se recorrió previamente)
+    prevVer = verEdge["vertexA"]
+    pathLen = 1 + pathToOrigin(edgesTo, markedMap, prevVer, originVer)
+    mp.put(markedMap, vertex, pathLen)
+
+    return pathLen
 
 
 # Funciones utilizadas para comparar elementos dentro de una lista
