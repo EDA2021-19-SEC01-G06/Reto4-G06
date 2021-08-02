@@ -1,4 +1,4 @@
-# ISIS1225 - Librerias de soporte
+# ISIS1225 - Librerias de soporte #
 # INTEGRANTES #
  * REQ2: José Vicente Rincón Celis - 20213321 - j.rinconc@uniandes.edu.co
  * REQ3: Juan Esteban Arboldea Restrepo - 201921578 - j.arboleda@uniandes.edu.co
