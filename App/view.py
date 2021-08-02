@@ -201,7 +201,7 @@ def mainMenu(analyzer):
             findClusters(analyzer)
         elif int(inputs[0]) == 2:
             #REQ 2
-            minimunRoute(analyzer)
+            minimumRoute(analyzer)
         elif int(inputs[0]) == 3:
             #REQ3
             minimumSpanNet(analyzer)
@@ -235,32 +235,28 @@ def findClusters(analyzer: dict):
     # Process
     ans = controller.findClusters(analyzer, landing1Name, landing2Name)
     # Output
-    print("El total de componentes fuertemente conectados es:", ans[0]["components"])
-    if ans[0]["stronglyC"]:
+    controller.mtt.printTrace()
+    print("El total de componentes fuertemente conectados es:", ans["components"])
+    if ans["stronglyC"]:
         print("Los landing points se encuentran fuertemente conectados")
-        print("Tiempo [ms]: ", f"{ans[1]:.3f}", "  ||  ",
-              "Memoria [kB]: ", f"{ans[2]:.3f}")
 
     else:
         print("Los landing points NO se encuentran fuertemente conectados")
-        print("Tiempo [ms]: ", f"{ans[1]:.3f}", "  ||  ",
-              "Memoria [kB]: ", f"{ans[2]:.3f}")
-
     # Map
     print("A continuación se mostrará el mapa.")
     eoc()
     # TODO encontrar ruta entre los dos vertices
     print("Creando mapa...")
     gMap = geoMap.newFullMap()
-    geoMap.addConectedComponents(analyzer, gMap, ans[0]["idscc"], ans[0]["components"])
+    geoMap.addConectedComponents(analyzer, gMap, ans["idscc"], ans["components"])
     geoMap.showMap(gMap)
     print("Abriendo mapa...")
 
 
-def minimunRoute(analyzer: dict):
+def minimumRoute(analyzer: dict):
     """
     REQ 2
-    User input, process and output to find the minimun route
+    User input, process and output to find the minimum route
     between two country capitals.
 
     Args
@@ -282,26 +278,22 @@ def minimunRoute(analyzer: dict):
     print("Cargando...")
     ans = controller.minimumRoute(analyzer, countryName1, countryName2)
     # Output
+    controller.mtt.printTrace()
     # Si no hay ruta
-    if ans[0]["status"] == 0:
+    if ans["status"] == 0:
         print("No se encontró una ruta entre las capitales de los dos paises")
-        print("Tiempo [ms]: ", f"{ans[1]:.3f}", "  ||  ",
-              "Memoria [kB]: ", f"{ans[2]:.3f}")
-
         eoc()
         return
     # Si hay ruta
-    routeLen = lt.size(ans[0]["path"])
+    routeLen = lt.size(ans["path"])
     print("La ruta es de longitud", routeLen)
-    print("Tiempo [ms]: ", f"{ans[1]:.3f}", "  ||  ",
-              "Memoria [kB]: ", f"{ans[2]:.3f}")
 
     print("A continuación se mostrará la ruta en un mapa.")
     eoc()
     # Map
     print("Creando mapa...")
     gMap = geoMap.newFullMap()
-    geoMap.addEdges(analyzer, gMap, ans[0]["path"], True)
+    geoMap.addEdges(analyzer, gMap, ans["path"], True)
     geoMap.showMap(gMap)
     print("Abriendo mapa...")
     print()
@@ -320,28 +312,32 @@ def minimumSpanNet(analyzer: dict):
     # Process
     print("Cargando...")
     ans = controller.minimumSpanNet(analyzer)
+    last_trace = controller.mtt.last_trace
     # Obtiene el tamaño de la rama mas larga
     lngstPathLen = controller.longestMSTbranch(
         ans["MST"]["edgeTo"],
         ans["orVertex"]
     )
+    last_trace = controller.mtt.addTrace(last_trace)
+    print()
+    controller.mtt.printTrace(trace=last_trace)
     # Crea un mapa vacio
     gMap = geoMap.newFullMap()
     # Obtiene la lista de vertices del MST
-    verticesLst = mp.keySet(ans[0]["MST"]["marked"])
+    verticesLst = mp.keySet(ans["MST"]["marked"])
     # Número de vertices en el MST
     vertexCnt = 0
     # Inicializa la variable totalCost
     totalCost = 0
     for vertex in lt.iterator(verticesLst):
         # Añade el vertice al mapa
-        if vertex == ans[0]["orVertex"]:
+        if vertex == ans["orVertex"]:
             geoMap.addVertex(analyzer, gMap, vertex, "red")
         else:
             geoMap.addVertex(analyzer, gMap, vertex)
             
         # Obtiene el arco asociado al vertice
-        edgeTo = getMapValue(ans[0]["MST"]["edgeTo"], vertex)
+        edgeTo = getMapValue(ans["MST"]["edgeTo"], vertex)
         if not edgeTo is None:
             # Suma el costo del arco al costo total del MST
             totalCost += edgeTo["weight"]
@@ -350,13 +346,11 @@ def minimumSpanNet(analyzer: dict):
             # Añade el arco al mapa
             geoMap.addEdge(analyzer, gMap, edgeTo)
     # Output
-    print("\nVertice de origen:", ans[0]["orVertex"])
+    print("\nVertice de origen:", ans["orVertex"])
     print("Número de vertices conectados:", vertexCnt)
     print("Costo total del MST:", round(totalCost, 2), " km")
-    print("Tamaño de la rama mas larga:", lngstPathLen)
-    print("Tiempo [ms]: ", f"{ans[1]:.3f}", "  ||  ",
-              "Memoria [kB]: ", f"{ans[2]:.3f}")
-    #TODO ramam mas larga
+    print("Longitud de la rama mas larga:", lngstPathLen)
+    print()
     print("A continuación se mostrará el mapa con el MST.")
     eoc()
     print("Cargando mapa...")

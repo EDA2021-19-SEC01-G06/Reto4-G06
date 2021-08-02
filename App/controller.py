@@ -150,20 +150,10 @@ def findClusters(analyzer, landing1Name, landing2Name):
     """
     TODO documentación
     """
-    
-    delta_time = -1.0
-    delta_memory = -1.0
-
-    tracemalloc.start()
-    start_time = getTime()
-    start_memory = getMemory()
-    ans=model.findClusters(analyzer, landing1Name, landing2Name)
-    stop_memory = getMemory()
-    stop_time = getTime()
-    tracemalloc.stop()
-    delta_time = stop_time - start_time
-    delta_memory = deltaMemory(start_memory, stop_memory)
-    return (ans,delta_time,delta_memory)
+    mtt.start()
+    ans = model.findClusters(analyzer, landing1Name, landing2Name)
+    mtt.stop()
+    return ans
 
 
 def minimumRoute(analyzer: dict, countryName1: str, countryName2: str):
@@ -185,20 +175,11 @@ def minimumRoute(analyzer: dict, countryName1: str, countryName2: str):
         dest:   vertice de destino
     """
 
-    delta_time = -1.0
-    delta_memory = -1.0
-
-    tracemalloc.start()
-    start_time = getTime()
-    start_memory = getMemory()
+    mtt.start()
     ans= model.minimumRoute(analyzer, countryName1, countryName2)
-    stop_memory = getMemory()
-    stop_time = getTime()
-    tracemalloc.stop()
-    delta_time = stop_time - start_time
-    delta_memory = deltaMemory(start_memory, stop_memory)
+    mtt.stop()
 
-    return (ans,delta_time,delta_memory)
+    return ans
 
 
 
@@ -214,20 +195,11 @@ def minimumSpanNet(analyzer: dict):
     -------
     TODO
     """
-    delta_time = -1.0
-    delta_memory = -1.0
-
-    tracemalloc.start()
-    start_time = getTime()
-    start_memory = getMemory()
+    mtt.start()
     ans= model.minimumSpanNet(analyzer)
-    stop_memory = getMemory()
-    stop_time = getTime()
-    tracemalloc.stop()
-    delta_time = stop_time - start_time
-    delta_memory = deltaMemory(start_memory, stop_memory)
+    mtt.stop()
 
-    return (ans,delta_time,delta_memory)
+    return ans
 
     
 
@@ -246,7 +218,10 @@ def longestMSTbranch(edgesTo, originVer: str):
     -------
     int -- longitud de la rama mas larga
     """
-    return model.longestMSTbranch(edgesTo, originVer)
+    mtt.start()
+    ans = model.longestMSTbranch(edgesTo, originVer)
+    mtt.stop()
+    return ans
 
     
 # Funciones de ordenamiento

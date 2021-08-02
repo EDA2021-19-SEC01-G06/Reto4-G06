@@ -123,3 +123,24 @@ class mtTrace:
             print(processDesc, time)
 
 
+    def addTrace(self, trace1, trace2 = None):
+        """
+        Añade la memoria el tiempo de 2 traces.
+        Si no se especifica trace2, se utiliza self.last_trace
+        """
+        if trace2 is None:
+            if self.last_trace is None:
+                raise Exception("Last trace está vacío y no se pasó un Trace por parámetro")
+            else:
+                trace2 = self.last_trace
+        
+        if self.trace_memory == True:
+            trace1["memory"] += trace2["memory"]
+        else:
+            trace1["memory"] = None
+        
+        trace1["time"] += trace2["time"]
+
+        return trace1
+
+
