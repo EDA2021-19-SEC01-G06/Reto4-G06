@@ -511,7 +511,6 @@ def minimumRoute(analyzer: dict, countryName1: str, countryName2: str):
         return {"status":   0}
     # Encuentra la ruta de costo mínimo entre el origen y el destino
     path = djk.pathTo(paths, vertex2)
-    print (path)
     # Crea la estructura de retorno
     returnDict = {
         "status"    :   1,

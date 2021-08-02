@@ -236,7 +236,7 @@ def findClusters(analyzer: dict):
     ans = controller.findClusters(analyzer, landing1Name, landing2Name)
     # Output
     print("El total de componentes fuertemente conectados es:", ans[0]["components"])
-    if ans["stronglyC"]:
+    if ans[0]["stronglyC"]:
         print("Los landing points se encuentran fuertemente conectados")
         print("Tiempo [ms]: ", f"{ans[1]:.3f}", "  ||  ",
               "Memoria [kB]: ", f"{ans[2]:.3f}")
@@ -252,7 +252,7 @@ def findClusters(analyzer: dict):
     # TODO encontrar ruta entre los dos vertices
     print("Creando mapa...")
     gMap = geoMap.newFullMap()
-    geoMap.addConectedComponents(analyzer, gMap, ans["idscc"], ans["components"])
+    geoMap.addConectedComponents(analyzer, gMap, ans[0]["idscc"], ans[0]["components"])
     geoMap.showMap(gMap)
     print("Abriendo mapa...")
 
@@ -301,7 +301,7 @@ def minimunRoute(analyzer: dict):
     # Map
     print("Creando mapa...")
     gMap = geoMap.newFullMap()
-    geoMap.addEdges(analyzer, gMap, ans["path"], True)
+    geoMap.addEdges(analyzer, gMap, ans[0]["path"], True)
     geoMap.showMap(gMap)
     print("Abriendo mapa...")
     print()
